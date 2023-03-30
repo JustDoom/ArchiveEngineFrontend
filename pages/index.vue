@@ -1,23 +1,27 @@
 <template>
   <div class="main-body">
-    <h1 class="">Archive Engine</h1>
-    <input type="text" id="search">
-    <input type="button" value="Search" v-on:click="search">
-    <br>
-    <table>
-      <tr>
-        <th>URL</th>
-        <th>Timestamp</th>
-        <th>Mime Type</th>
-        <th>Status Code</th>
-      </tr>
-      <tr v-for="url in urls">
-        <td>{{ url.url }}</td>
-        <td>{{ url.timestamp }}</td>
-        <td>{{ url.mimeType }}</td>
-        <td>{{ url.statusCode }}</td>
-      </tr>
-    </table>
+    <h1 class="text-center font-bold text-5xl">Archive Engine</h1><br>
+    <div>
+      <NuxtLink to="/usage">How to use (READ ME)</NuxtLink>
+      <input type="text" id="search" class="search-box" v-on:keydown="keydown"><br><br>
+      <input type="button" value="Search" v-on:click="search" class="search-button"><br><br>
+      <table class="max-w[100%] w-[100%]">
+        <tr>
+          <th>URL</th>
+          <th>Timestamp</th>
+          <th>Mime Type</th>
+          <th>Status Code</th>
+        </tr>
+        <tr v-for="url in urls">
+          <td>
+            <a target="_blank" :href="`https://web.archive.org/web/${url.timestamp}/${url.url}`">{{ url.url }}</a>
+          </td>
+          <td>{{ url.timestamp }}</td>
+          <td>{{ url.mimeType }}</td>
+          <td>{{ url.statusCode }}</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -30,12 +34,16 @@ export default {
     }
   },
   methods: {
+    keydown: async function (key) {
+      if (key.key === "Enter") {
+        await this.search();
+      }
+    },
     search: async function () {
       const search = document.getElementById('search').value;
 
       this.$axios.get(`api/search?query=${search}`)
           .then(response => {
-            console.log(response.data);
             this.urls = response.data;
           })
           .catch(error => {
@@ -51,12 +59,35 @@ table {
   border-collapse: collapse;
   width: 100%;
 }
+
 td, th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
 }
+
 tr:nth-child(even) {
   background-color: #dddddd;
+}
+
+.search-box {
+  width: 100%;
+  height: 50px;
+  font-size: 20px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0 10px;
+}
+
+.search-button {
+  width: 100%;
+  height: 50px;
+  font-size: 20px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  padding: 0 10px;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
 }
 </style>
