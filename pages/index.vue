@@ -5,6 +5,9 @@
       <NuxtLink to="/usage">How to use (READ ME)</NuxtLink>
       <input type="text" id="search" class="search-box" v-on:keydown="keydown"><br><br>
       <input type="button" value="Search" v-on:click="search" class="search-button"><br><br>
+      <input type="button" id="back" class="back" value="Back" v-on:click="back">
+      <label>Page: {{ page }}</label>
+      <input type="button" id="next" class="next" value="Next" v-on:click="next"><br><br>
       <table class="max-w[100%] w-[100%]">
         <tr>
           <th>URL</th>
@@ -21,6 +24,10 @@
           <td>{{ url.statusCode }}</td>
         </tr>
       </table>
+      <br>
+      <input type="button" id="back" class="back" value="Back" v-on:click="back">
+      <label>Page: {{ page }}</label>
+      <input type="button" id="next" class="next" value="Next" v-on:click="next">
     </div>
   </div>
 </template>
@@ -30,7 +37,9 @@ export default {
   name: "index",
   data() {
     return {
-      urls: []
+      urls: [],
+      page: 0,
+      searching: false
     }
   },
   methods: {
@@ -42,13 +51,29 @@ export default {
     search: async function () {
       const search = document.getElementById('search').value;
 
-      this.$axios.get(`api/search?query=${search}`)
+      if (search === "") return;
+
+      this.searching = true;
+
+      this.$axios.get(`api/search?query=${search}&page=${this.page}`)
           .then(response => {
             this.urls = response.data;
           })
           .catch(error => {
             console.log(error);
-          });
+          }).finally(() => {
+        this.searching = false;
+      });
+    },
+    next: async function () {
+      if (this.urls.length < 50 || this.searching) return;
+      this.page++;
+      await this.search();
+    },
+    back: async function () {
+      if (this.page === 0 || this.searching) return;
+      this.page--;
+      await this.search();
     }
   }
 }
@@ -86,6 +111,26 @@ tr:nth-child(even) {
   border: 1px solid #000;
   border-radius: 5px;
   padding: 0 10px;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.back {
+  width: 50px;
+  height: 25px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.next {
+  width: 50px;
+  height: 25px;
+  border: 1px solid #000;
+  border-radius: 5px;
   background-color: #000;
   color: #fff;
   cursor: pointer;
