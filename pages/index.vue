@@ -10,10 +10,10 @@
       <input type="button" id="next" class="next" value="Next" v-on:click="next"><br><br>
       <table class="max-w[100%] w-[100%]">
         <tr>
-          <th>URL</th>
-          <th>Timestamp</th>
-          <th>Mime Type</th>
-          <th>Status Code</th>
+          <th id="url" v-on:click="sortBy('url')">URL {{ sort === 'url' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
+          <th id="timestamp" v-on:click="sortBy('timestamp')">Timestamp {{ sort === 'timestamp' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
+          <th id="mimeType" v-on:click="sortBy('mimeType')">Mime Type {{ sort === 'mimeType' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
+          <th id="statusCode" v-on:click="sortBy('statusCode')">Status Code {{ sort === 'statusCode' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
         </tr>
         <tr v-for="url in urls">
           <td>
@@ -39,7 +39,9 @@ export default {
     return {
       urls: [],
       page: 0,
-      searching: false
+      searching: false,
+      sort: 'timestamp',
+      ascending: false
     }
   },
   methods: {
@@ -55,7 +57,7 @@ export default {
 
       this.searching = true;
 
-      this.$axios.get(`api/search?query=${search}&page=${this.page}`)
+      this.$axios.get(`api/search?query=${search}&page=${this.page}&sortBy=${this.sort}&ascending=${this.ascending}`)
           .then(response => {
             this.urls = response.data;
           })
@@ -73,6 +75,15 @@ export default {
     back: async function () {
       if (this.page === 0 || this.searching) return;
       this.page--;
+      await this.search();
+    },
+    sortBy: async function (sort) {
+      if (this.sort === sort) {
+        this.ascending = !this.ascending;
+      } else {
+        this.ascending = true;
+        this.sort = sort;
+      }
       await this.search();
     }
   }
