@@ -2,7 +2,8 @@
   <div class="main-body">
     <h1 class="text-center font-bold text-5xl">Archive Engine</h1><br>
     <div>
-      <NuxtLink to="/usage">How to use (READ ME)</NuxtLink>
+      <NuxtLink to="/usage">How to use (READ ME)</NuxtLink> -
+      <NuxtLink to="/statistics">Statistics</NuxtLink>
       <input type="text" id="search" class="search-box" v-on:keydown="keydown"><br><br>
       <input type="button" value="Search" v-on:click="search" class="search-button"><br><br>
       <input type="button" id="back" class="back" value="Back" v-on:click="back">
