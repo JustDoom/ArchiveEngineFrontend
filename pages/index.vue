@@ -2,33 +2,48 @@
   <div class="main-body">
     <h1 class="text-center font-bold text-5xl">Archive Engine</h1><br>
     <div>
-      <NuxtLink to="/usage">How to use (READ ME)</NuxtLink> -
+      <NuxtLink to="/usage">How to use (READ ME)</NuxtLink>
+      -
       <NuxtLink to="/statistics">Statistics</NuxtLink>
       <input type="text" id="search" class="search-box" v-on:keydown="keydown"><br><br>
       <input type="button" value="Search" v-on:click="search" class="search-button"><br><br>
-      <input type="button" id="back" class="back" value="Back" v-on:click="back">
-      <label>Page: {{ page }}</label>
-      <input type="button" id="next" class="next" value="Next" v-on:click="next"><br><br>
-      <table class="max-w[100%] w-[100%]">
-        <tr>
-          <th id="url" v-on:click="sortBy('url')">URL {{ sort === 'url' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
-          <th id="timestamp" v-on:click="sortBy('timestamp')">Timestamp {{ sort === 'timestamp' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
-          <th id="mimeType" v-on:click="sortBy('mimeType')">Mime Type {{ sort === 'mimeType' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
-          <th id="statusCode" v-on:click="sortBy('statusCode')">Status Code {{ sort === 'statusCode' ? (this.ascending ? '&#8593;' : '&#8595;') : ''}}</th>
-        </tr>
-        <tr v-for="url in urls">
-          <td>
-            <a target="_blank" :href="`https://web.archive.org/web/${url.timestamp}/${url.url}`">{{ url.url }}</a>
-          </td>
-          <td>{{ url.timestamp }}</td>
-          <td>{{ url.mimeType }}</td>
-          <td>{{ url.statusCode }}</td>
-        </tr>
-      </table>
-      <br>
-      <input type="button" id="back" class="back" value="Back" v-on:click="back">
-      <label>Page: {{ page }}</label>
-      <input type="button" id="next" class="next" value="Next" v-on:click="next">
+      <div v-if="searching" class="loader ml-auto mr-auto"></div>
+      <div v-if="urls !== null">
+        <p v-if="urls.length === 0">No results</p>
+        <div v-else>
+          <input type="button" id="back" class="back" value="Back" v-on:click="back">
+          <label>Page: {{ page }}</label>
+          <input type="button" id="next" class="next" value="Next" v-on:click="next"><br><br>
+          <table class="max-w[100%] w-[100%]">
+            <tr>
+              <th id="url" v-on:click="sortBy('url')">URL
+                {{ sort === 'url' ? (this.ascending ? '&#8593;' : '&#8595;') : '' }}
+              </th>
+              <th id="timestamp" v-on:click="sortBy('timestamp')">Timestamp
+                {{ sort === 'timestamp' ? (this.ascending ? '&#8593;' : '&#8595;') : '' }}
+              </th>
+              <th id="mimeType" v-on:click="sortBy('mimeType')">Mime Type
+                {{ sort === 'mimeType' ? (this.ascending ? '&#8593;' : '&#8595;') : '' }}
+              </th>
+              <th id="statusCode" v-on:click="sortBy('statusCode')">Status Code
+                {{ sort === 'statusCode' ? (this.ascending ? '&#8593;' : '&#8595;') : '' }}
+              </th>
+            </tr>
+            <tr v-for="url in urls">
+              <td>
+                <a target="_blank" :href="`https://web.archive.org/web/${url.timestamp}/${url.url}`">{{ url.url }}</a>
+              </td>
+              <td>{{ url.timestamp }}</td>
+              <td>{{ url.mimeType }}</td>
+              <td>{{ url.statusCode }}</td>
+            </tr>
+          </table>
+          <br>
+          <input type="button" id="back" class="back" value="Back" v-on:click="back">
+          <label>Page: {{ page }}</label>
+          <input type="button" id="next" class="next" value="Next" v-on:click="next">
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -38,7 +53,7 @@ export default {
   name: "index",
   data() {
     return {
-      urls: [],
+      urls: null,
       page: 0,
       searching: false,
       sort: 'timestamp',
@@ -146,5 +161,23 @@ tr:nth-child(even) {
   background-color: #000;
   color: #fff;
   cursor: pointer;
+}
+
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #000000;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>
