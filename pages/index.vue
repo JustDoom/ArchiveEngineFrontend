@@ -6,7 +6,7 @@
       -
       <NuxtLink to="/statistics">Statistics</NuxtLink>
       <input type="text" id="search" class="search-box" v-on:keydown="keydown"><br><br>
-      <input type="button" value="Search" v-on:click="search" class="search-button"><br><br>
+      <input type="button" value="Search" v-on:click="searchClicked" class="search-button"><br><br>
       <div v-if="searching" class="loader ml-auto mr-auto"></div>
       <div v-if="urls !== null">
         <p v-if="urls.length === 0">No results</p>
@@ -63,8 +63,12 @@ export default {
   methods: {
     keydown: async function (key) {
       if (key.key === "Enter") {
-        await this.search();
+        await this.searchClicked();
       }
+    },
+    searchClicked: async function () {
+      this.page = 0;
+      await this.search();
     },
     search: async function () {
       const search = document.getElementById('search').value;
