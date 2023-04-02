@@ -8,6 +8,7 @@
       <input type="text" id="search" class="search-box" v-on:keydown="keydown"><br><br>
       <input type="button" value="Search" v-on:click="searchClicked" class="search-button"><br><br>
       <div v-if="searching" class="loader ml-auto mr-auto"></div>
+      <p v-if="error !== null" class="text-red-600">{{ error }}</p>
       <div v-if="urls !== null">
         <p v-if="urls.length === 0">No results</p>
         <div v-else>
@@ -57,7 +58,8 @@ export default {
       page: 0,
       searching: false,
       sort: 'timestamp',
-      ascending: false
+      ascending: false,
+      error: null
     }
   },
   methods: {
@@ -75,17 +77,23 @@ export default {
 
       if (search === "") return;
 
+      this.error = null;
       this.searching = true;
 
-      this.$axios.get(`api/search?query=${search}&page=${this.page}&sortBy=${this.sort}&ascending=${this.ascending}`)
-          .then(response => {
-            this.urls = response.data;
-          })
-          .catch(error => {
-            console.log(error);
-          }).finally(() => {
+      try {
+        await this.$axios.get(`api/search?query=${search}&page=${this.page}&sortBy=${this.sort}&ascending=${this.ascending}`)
+            .then(response => {
+              this.urls = response.data;
+            })
+            .catch(error => {
+              this.error = error.response.data.message;
+            }).finally(() => {
+          this.searching = false;
+        });
+      } catch (e) {
+        console.log(e);
         this.searching = false;
-      });
+      }
     },
     next: async function () {
       if (this.urls.length < 50 || this.searching) return;

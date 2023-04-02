@@ -10,7 +10,7 @@ This is the repository for the frontend of the Archive Engine website. It is bui
 - [x] Add loading feedback
 - [x] Add sorting by different columns (timestamp, url, status code and mimetype)
 - [x] Add a statistics page
-- [ ] Add error feedback
+- [x] Add error feedback
 - [ ] Add the options/filtering/page as a url parameter for easy sharing/modifying
 - [ ] Allow changing of the page size
 
